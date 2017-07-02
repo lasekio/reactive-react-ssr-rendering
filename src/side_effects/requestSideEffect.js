@@ -10,12 +10,18 @@ export default store => () => {
         .map(request => {
             store.dispatch(requestProcess(request.id));
 
-            axios.get(request.url)
+            axios.get(request.url, request.parameters)
                 .then(({ data }) => {
-                    store.dispatch(requestSuccess(request.id, data))
+                    if (request.successActionCallback) {
+                        store.dispatch(request.successActionCallback(data));
+                    }
+
+                    store.dispatch(requestSuccess(request.id, data));
+
                 })
-                .catch(() => {
-                    store.dispatch(requestFailed(request.id))
+                .catch((error) => {
+                    console.log("ERROR", error);
+                    store.dispatch(requestFailed(request.id, error))
                 });
         });
 };

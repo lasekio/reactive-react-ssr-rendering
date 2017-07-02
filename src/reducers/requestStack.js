@@ -15,7 +15,6 @@ import {
 import requestStackStore from '../store/requestStack'
 
 export default (state = requestStackStore(), action) => {
-    console.log('ACTION', action.type, state.requestsInProgress, state.requests.length);
     let requestsInProgress = state.requestsInProgress;
     let requests = state.requests;
 
@@ -26,6 +25,8 @@ export default (state = requestStackStore(), action) => {
             requests.push({
                 url: action.url,
                 id: action.id,
+                parameters: action.parameters,
+                successActionCallback: action.successActionCallback,
                 state: REQUEST_STATE_PENDING,
             });
 
@@ -33,7 +34,7 @@ export default (state = requestStackStore(), action) => {
 
         case REQUEST_SUCCESS:
             requests = requests.map(request => request.id === action.id ?
-                { ...request, state: REQUEST_STATE_SUCCESS, data: action.data } :
+                { ...request, state: REQUEST_STATE_SUCCESS } :
                 request
             );
 
